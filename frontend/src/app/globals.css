@@ -1,0 +1,98 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 33% 98%;
+    --foreground: 218 23% 23%;
+    --card: 0 0% 100%;
+    --card-foreground: 218 23% 23%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 218 23% 23%;
+    --primary: 218 23% 23%;
+    --primary-foreground: 210 33% 98%;
+    --secondary: 26 41% 92%;
+    --secondary-foreground: 218 23% 23%;
+    --muted: 210 20% 94%;
+    --muted-foreground: 218 15% 42%;
+    --accent: 0 75% 57%;
+    --accent-foreground: 210 33% 98%;
+    --destructive: 0 75% 57%;
+    --destructive-foreground: 210 33% 98%;
+    --success: 151 48% 43%;
+    --success-foreground: 210 33% 98%;
+    --warning: 26 41% 59%;
+    --warning-foreground: 218 23% 23%;
+    --border: 210 18% 88%;
+    --input: 210 18% 88%;
+    --ring: 0 75% 57%;
+    --radius: 4px;
+  }
+
+  .dark {
+    --background: 218 23% 12%;
+    --foreground: 210 33% 96%;
+    --card: 218 23% 16%;
+    --card-foreground: 210 33% 96%;
+    --popover: 218 23% 16%;
+    --popover-foreground: 210 33% 96%;
+    --primary: 26 41% 59%;
+    --primary-foreground: 218 23% 12%;
+    --secondary: 218 20% 20%;
+    --secondary-foreground: 210 33% 96%;
+    --muted: 218 18% 18%;
+    --muted-foreground: 210 15% 62%;
+    --accent: 0 70% 55%;
+    --accent-foreground: 210 33% 98%;
+    --destructive: 0 65% 52%;
+    --destructive-foreground: 210 33% 98%;
+    --success: 151 45% 40%;
+    --success-foreground: 210 33% 98%;
+    --warning: 26 41% 55%;
+    --warning-foreground: 218 23% 12%;
+    --border: 218 18% 22%;
+    --input: 218 18% 22%;
+    --ring: 0 70% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  .font-display {
+    font-family: var(--font-space-grotesk), system-ui, sans-serif;
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer components {
+  .grit-card {
+    @apply rounded border border-border/60 border-l-4 border-l-accent bg-card shadow-sm;
+  }
+  .grit-btn {
+    @apply rounded font-semibold transition-colors;
+  }
+  .zone-pill {
+    @apply rounded px-3 py-1 text-xs font-semibold uppercase tracking-wide;
+  }
+  .zone-pill-available {
+    @apply bg-success/15 text-success;
+  }
+  .zone-pill-in_use {
+    @apply bg-accent/15 text-accent;
+  }
+  .zone-pill-reset_in_progress {
+    @apply bg-warning/15 text-warning-foreground;
+  }
+  .zone-pill-closed {
+    @apply bg-muted text-muted-foreground;
+  }
+}
