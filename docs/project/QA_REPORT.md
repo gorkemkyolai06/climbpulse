@@ -1,46 +1,50 @@
-# BayPulse QA Raporu
+# ClimbPulse QA Raporu
 
-**Tarih**: 2026-06-17
+**Tarih:** 2026-06-17  
+**Repo:** https://github.com/gorkemkyolai06/climbpulse
 
-## Test Sonuçları
+## Yerel Doğrulama
 
-| Test Türü | Sonuç | Detay |
-|-----------|-------|-------|
-| Backend unit tests | ✅ Geçti | 1 test (DashboardService) |
-| Integration tests | ✅ Geçti | 14/14 senaryo |
-| Frontend build | ✅ Geçti | Next.js production build |
-| API contract validation | ✅ Geçti | HTTP status kodları doğrulandı |
+| Test | Durum |
+|------|-------|
+| Backend build | ✅ Geçti |
+| Backend unit tests (dashboard) | ✅ Geçti |
+| Frontend production build | ✅ Geçti (14 sayfa) |
+| Integration tests (18 senaryo) | ⏳ CI'da çalışacak |
 
 ## Entegrasyon Test Senaryoları
 
 1. Health Check (200)
 2. Login (200)
 3. Dashboard Stats (200)
-4. List Bays (200)
-5. List Bay Sessions (200)
-6. List Simulator Repairs (200)
-7. List Maintenance Schedules (200)
-8. List Rate Tiers (200)
-9. Golf Facility Profile (200)
-10. Urgent Simulator Repairs (200)
-11. Create Bay (201)
-12. Update Bay (200)
-13. Delete Bay (200)
-14. Unauthorized Access (401)
+4. List Wall Zones (200)
+5. List Climb Sessions (200)
+6. List Route Settings (200)
+7. List Route Rotations (200)
+8. List Gear Inventory (200)
+9. List Rate Tiers (200)
+10. Climbing Gym Profile (200)
+11. Urgent Route Settings (200)
+12. Available Gear (200)
+13. Create Wall Zone (201)
+14. Update Wall Zone (200)
+15. Delete Wall Zone (200)
+16. Create Gear Item (201)
+17. Update Gear Item (200)
+18. Delete Gear Item (200)
+19. Unauthorized Access (401)
 
-Test script: `tests/integration.sh`
-
-## Demo Hesap Doğrulama
+## Demo Hesabı
 
 | Alan | Değer |
 |------|-------|
-| E-posta | demo@fairwaygreensims.com |
+| E-posta | demo@verticalpeakclimbing.com |
 | Şifre | demo123456 |
 
-Yerel ortamda login ve authenticated API istekleri başarılı.
+## Production Doğrulama
 
-## Bilinen Sınırlamalar
-
-- Production deployment URL'leri CI/CD sonrası güncellenecek
-- MVP'de AI özelliği yok
-- Tek tesis (multi-tenant scope) — multi-location faz 3'te
+| Test | Durum |
+|------|-------|
+| Railway health endpoint | ⏳ Deploy bekliyor |
+| Vercel frontend | ⏳ Deploy bekliyor |
+| Demo login (production) | ⏳ Deploy bekliyor |
