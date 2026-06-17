@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: climbpulse
+      POSTGRES_PASSWORD: climbpulse123
+      POSTGRES_DB: climbpulse
+    ports:
+      - '5453:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U climbpulse']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./backend
+    ports:
+      - '4013:4013'
+    environment:
+      DATABASE_URL: postgresql://climbpulse:climbpulse123@postgres:5432/climbpulse?schema=public
+      JWT_SECRET: climbpulse-dev-secret
+      FRONTEND_URL: http://localhost:3013
+      PORT: 4013
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: npm run deploy
+
+  frontend:
+    build: ./frontend
+    ports:
+      - '3013:3013'
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4013/api
+    depends_on:
+      - backend
