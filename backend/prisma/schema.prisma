@@ -1,0 +1,256 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  owner
+  manager
+  front_desk
+}
+
+enum WallZoneType {
+  boulder
+  top_rope
+  lead
+  speed
+  training
+}
+
+enum WallZoneStatus {
+  open
+  closed
+  setting
+  inspection
+}
+
+enum SessionStatus {
+  recorded
+  verified
+  disputed
+}
+
+enum SettingPriority {
+  low
+  medium
+  high
+  urgent
+}
+
+enum SettingStatus {
+  open
+  in_progress
+  completed
+  cancelled
+}
+
+enum RotationCategory {
+  hold_replacement
+  anchor_check
+  mat_inspection
+  wall_clean
+  other
+}
+
+enum RotationStatus {
+  scheduled
+  in_progress
+  completed
+  overdue
+}
+
+enum RateCategory {
+  day_pass
+  membership_monthly
+  punch_card
+  private_lesson
+  youth_program
+  other
+}
+
+enum RateStatus {
+  active
+  upcoming
+  archived
+}
+
+enum GearType {
+  harness
+  shoes
+  chalk_bag
+  belay_device
+  helmet
+}
+
+enum GearStatus {
+  available
+  rented
+  maintenance
+  retired
+}
+
+model ClimbingGym {
+  id             String   @id @default(uuid())
+  name           String
+  phone          String?
+  address        String?
+  city           String?
+  state          String?
+  zipCode        String?  @map("zip_code")
+  totalWallZones Int      @default(12) @map("total_wall_zones")
+  timezone       String   @default("America/Chicago")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  users          User[]
+  wallZones      WallZone[]
+  climbSessions  ClimbSession[]
+  routeSettings  RouteSetting[]
+  routeRotations RouteRotation[]
+  rateTiers      RateTier[]
+  gearInventory  GearInventory[]
+
+  @@map("climbing_gyms")
+}
+
+model User {
+  id             String   @id @default(uuid())
+  email          String   @unique
+  passwordHash   String   @map("password_hash")
+  firstName      String   @map("first_name")
+  lastName       String   @map("last_name")
+  role           UserRole @default(owner)
+  climbingGymId  String   @map("climbing_gym_id")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  climbingGym ClimbingGym @relation(fields: [climbingGymId], references: [id], onDelete: Cascade)
+
+  @@map("users")
+}
+
+model WallZone {
+  id             String         @id @default(uuid())
+  climbingGymId  String         @map("climbing_gym_id")
+  name           String
+  section        String
+  zoneType       WallZoneType   @default(boulder) @map("zone_type")
+  gradeRange     String?        @map("grade_range")
+  maxCapacity    Int            @default(20) @map("max_capacity")
+  status         WallZoneStatus @default(open)
+  notes          String?
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+
+  climbingGym   ClimbingGym    @relation(fields: [climbingGymId], references: [id], onDelete: Cascade)
+  climbSessions ClimbSession[]
+  routeSettings RouteSetting[]
+
+  @@unique([climbingGymId, name])
+  @@index([climbingGymId, status])
+  @@map("wall_zones")
+}
+
+model ClimbSession {
+  id                String        @id @default(uuid())
+  climbingGymId     String        @map("climbing_gym_id")
+  wallZoneId        String        @map("wall_zone_id")
+  sessionAt         DateTime      @map("session_at")
+  cashAmount        Float         @default(0) @map("cash_amount")
+  cardAmount        Float         @default(0) @map("card_amount")
+  checkIns          Int           @default(0) @map("check_ins")
+  gearRentalRevenue Float         @default(0) @map("gear_rental_revenue")
+  status            SessionStatus @default(recorded)
+  notes             String?
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  climbingGym ClimbingGym @relation(fields: [climbingGymId], references: [id], onDelete: Cascade)
+  wallZone    WallZone    @relation(fields: [wallZoneId], references: [id], onDelete: Cascade)
+
+  @@index([climbingGymId, sessionAt])
+  @@index([climbingGymId, status])
+  @@map("climb_sessions")
+}
+
+model RouteSetting {
+  id            String          @id @default(uuid())
+  climbingGymId String          @map("climbing_gym_id")
+  wallZoneId    String          @map("wall_zone_id")
+  title         String
+  description   String?
+  reportedAt    DateTime        @map("reported_at")
+  completedAt   DateTime?       @map("completed_at")
+  priority      SettingPriority @default(medium)
+  status        SettingStatus   @default(open)
+  cost          Float?
+  notes         String?
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  climbingGym ClimbingGym @relation(fields: [climbingGymId], references: [id], onDelete: Cascade)
+  wallZone    WallZone    @relation(fields: [wallZoneId], references: [id], onDelete: Cascade)
+
+  @@index([climbingGymId, status])
+  @@index([climbingGymId, priority])
+  @@map("route_settings")
+}
+
+model RouteRotation {
+  id            String           @id @default(uuid())
+  climbingGymId String           @map("climbing_gym_id")
+  title         String
+  description   String?
+  category      RotationCategory @default(other)
+  section       String?
+  scheduledAt   DateTime         @map("scheduled_at")
+  status        RotationStatus   @default(scheduled)
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+
+  climbingGym ClimbingGym @relation(fields: [climbingGymId], references: [id], onDelete: Cascade)
+
+  @@index([climbingGymId, scheduledAt])
+  @@map("route_rotations")
+}
+
+model RateTier {
+  id              String       @id @default(uuid())
+  climbingGymId   String       @map("climbing_gym_id")
+  title           String
+  rateCategory    RateCategory @default(day_pass) @map("rate_category")
+  status          RateStatus   @default(active)
+  basePrice       Float        @map("base_price")
+  priceMultiplier Float        @default(1.0) @map("price_multiplier")
+  notes           String?
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  climbingGym ClimbingGym @relation(fields: [climbingGymId], references: [id], onDelete: Cascade)
+
+  @@index([climbingGymId, rateCategory])
+  @@map("rate_tiers")
+}
+
+model GearInventory {
+  id            String     @id @default(uuid())
+  climbingGymId String     @map("climbing_gym_id")
+  name          String
+  gearType      GearType   @map("gear_type")
+  size          String?
+  status        GearStatus @default(available)
+  rentalPrice   Float      @default(0) @map("rental_price")
+  notes         String?
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  climbingGym ClimbingGym @relation(fields: [climbingGymId], references: [id], onDelete: Cascade)
+
+  @@index([climbingGymId, gearType])
+  @@index([climbingGymId, status])
+  @@map("gear_inventory")
+}
